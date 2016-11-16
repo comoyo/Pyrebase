@@ -562,10 +562,9 @@ class Stream:
                 self.stream_handler(msg_data)
 
     def close(self):
-        while not self.sse and not hasattr(self.sse, 'resp'):
-            time.sleep(0.001)
-        self.sse.running = False
-        self.sse.close()
-        self.sse.thread.join()
+        if self.sse:
+            self.sse.running = False
+            self.sse.close()
+            self.sse.thread.join()
         self.thread.join()
         return self
