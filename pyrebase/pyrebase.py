@@ -556,8 +556,15 @@ class Stream:
     def start_stream(self):
         self.sse = ClosableSSEClient(self.url, session=self.make_session(), build_headers=self.build_headers)
         for msg in self.sse:
-            if msg.data:
+            if not msg.data:
+                return
+
+            try:
                 msg_data = json.loads(msg.data)
+            except json.JSONDecodeError:
+                return
+
+            if msg_data:
                 msg_data["event"] = msg.event
 
                 if self.stream_id:
